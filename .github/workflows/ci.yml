@@ -7,11 +7,14 @@ on:
   pull_request:
     branches:
       - master
+  schedule:
+    - cron: "0 3 * * *"
 
 jobs:
   changes:
     name: Detect changes
     runs-on: ubuntu-slim
+    if: github.event_name != 'schedule'
     outputs:
       python-3_14: ${{ steps.filter.outputs.python-3_14 }}
     steps:
@@ -28,7 +31,7 @@ jobs:
 
   python-3_14:
     needs: changes
-    if: needs.changes.outputs.python-3_14 == 'true'
+    if: always() && (github.event_name == 'schedule' || needs.changes.outputs.python-3_14 == 'true')
     uses: ./.github/workflows/build-image.yml
     permissions:
       contents: read
