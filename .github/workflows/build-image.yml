@@ -56,6 +56,8 @@ jobs:
         with:
           context: ${{ inputs.dockerfile_context }}
           platforms: ${{ matrix.platform }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=${{ github.event_name != 'pull_request' }},name-canonical=true,push=${{ github.event_name != 'pull_request' }}
           cache-from: type=gha,scope=${{ inputs.image_name }}-${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=${{ inputs.image_name }}-${{ matrix.platform }}

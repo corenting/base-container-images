@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:pinDigests", // to pin digests of docker images
+    ":dependencyDashboard"
+  ],
+
+  // Don't limit PRs: useful to get all updates asap + to avoid issues
+  // if the bot state doesn't match github state (branch deleted by hand etc.)
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
+
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["**/Dockerfile"],
+      "matchStrings": [
+        "#\\s*renovate:\\s+depName=(?<depName>\\S+)\\nARG \\w+=(?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "deb",
+      "registryUrlTemplate": "https://deb.debian.org/debian?suite=trixie&components=main&binaryArch=amd64",
+      "versioningTemplate": "deb"
+    }
+  ]
+}
