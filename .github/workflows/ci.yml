@@ -17,6 +17,7 @@ jobs:
     if: github.event_name != 'schedule'
     outputs:
       python-3_14: ${{ steps.filter.outputs.python-3_14 }}
+      python-3_14-gdal: ${{ steps.filter.outputs.python-3_14-gdal }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -27,6 +28,9 @@ jobs:
           filters: |
             python-3_14:
               - 'python/3.14/**'
+              - '.github/workflows/build-image.yml'
+            python-3_14-gdal:
+              - 'python/3.14-gdal/**'
               - '.github/workflows/build-image.yml'
 
   python-3_14:
@@ -40,3 +44,15 @@ jobs:
     with:
       dockerfile_context: python/3.14
       image_name: python-3.14
+
+  python-3_14-gdal:
+    needs: [changes, python-3_14]
+    if: always() && !failure() && !cancelled() && (github.event_name == 'schedule' || needs.changes.outputs.python-3_14 == 'true' || needs.changes.outputs.python-3_14-gdal == 'true')
+    uses: ./.github/workflows/build-image.yml
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+    with:
+      dockerfile_context: python/3.14-gdal
+      image_name: python-3.14-gdal
