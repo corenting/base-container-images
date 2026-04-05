@@ -36,6 +36,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      security-events: write
     with:
       dockerfile_context: python/3.14
       image_name: python-3.14

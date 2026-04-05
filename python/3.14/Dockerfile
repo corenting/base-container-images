@@ -11,7 +11,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends dumb-init=${DUM
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
-RUN useradd --system --no-create-home nonroot
+# Create a nonroot user and an /app directory for installation
+RUN useradd --system --no-create-home nonroot && mkdir /app && chown -R nonroot:nonroot /app
+
 USER nonroot
+
+WORKDIR /app
 
 ENTRYPOINT ["dumb-init"]
