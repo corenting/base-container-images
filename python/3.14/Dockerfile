@@ -18,4 +18,4 @@ USER nonroot
 
 WORKDIR /app
 
-ENTRYPOINT ["dumb-init"]
+ENTRYPOINT ["dumb-init", "--"]
