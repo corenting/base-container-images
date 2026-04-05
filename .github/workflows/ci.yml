@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-slim
+    outputs:
+      python-3_14: ${{ steps.filter.outputs.python-3_14 }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            python-3_14:
+              - 'python/3.14/**'
+              - '.github/workflows/build-image.yml'
+
+  python-3_14:
+    needs: changes
+    if: needs.changes.outputs.python-3_14 == 'true'
+    uses: ./.github/workflows/build-image.yml
+    with:
+      dockerfile_context: python/3.14
+      image_name: python-3.14
