@@ -30,6 +30,9 @@ jobs:
     needs: changes
     if: needs.changes.outputs.python-3_14 == 'true'
     uses: ./.github/workflows/build-image.yml
+    permissions:
+      contents: read
+      packages: write
     with:
       dockerfile_context: python/3.14
       image_name: python-3.14
