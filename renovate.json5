@@ -15,6 +15,15 @@
   "automerge": true,
   "automergeType": "branch",
 
+  // Only automerge digest and patch updates (not major/minor,
+  // e.g. we don't want to bump python 3.14 to 3.15 automatically)
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major", "minor"],
+      "automerge": false
+    }
+  ],
+
   // For Dockerfile
   "customManagers": [
     {
