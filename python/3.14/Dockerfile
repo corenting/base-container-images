@@ -1,5 +1,5 @@
 # Python system base
-FROM python:3.14.4-trixie@sha256:1692046a126f2841dfec22313e9a282b697e0aeca6c25c0434b476feba618e16 AS base
+FROM python:3.14.4-trixie@sha256:8f84f00e6981bff45ce0ed100019142e13a397412bc130425f34ece42906cd48 AS base
 
 # renovate: depName=dumb-init
 ARG DUMB_INIT_VERSION=1.2.5-3
