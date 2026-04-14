@@ -11,6 +11,11 @@
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
 
+  // Automerge
+  "automerge": true,
+  "automergeType": "branch",
+
+  // For Dockerfile
   "customManagers": [
     {
       "customType": "regex",
