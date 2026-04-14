@@ -20,7 +20,8 @@
   "packageRules": [
     {
       "matchUpdateTypes": ["major", "minor"],
-      "automerge": false
+      "automerge": false,
+      "reviewers": ["corenting"]
     }
   ],
 
