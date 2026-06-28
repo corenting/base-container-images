@@ -47,7 +47,8 @@ jobs:
       security-events: write
     with:
       dockerfile_context: python/3.14
-      image_name: python-3.14
+      image_base: python
+      image_tag: 3.14
 
   python-3_14-gdal:
     needs: [changes, python-3_14]
@@ -59,7 +60,8 @@ jobs:
       security-events: write
     with:
       dockerfile_context: python/3.14-gdal
-      image_name: python-3.14-gdal
+      image_base: python
+      image_tag: 3.14-gdal
 
   debian-13:
     needs: changes
@@ -71,4 +73,5 @@ jobs:
       security-events: write
     with:
       dockerfile_context: debian/13
-      image_name: debian-13
+      image_base: debian
+      image_tag: 13

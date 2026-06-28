@@ -7,13 +7,17 @@ on:
         required: true
         type: string
         description: "Path to the Dockerfile context (e.g. python/3.14)"
-      image_name:
+      image_base:
         required: true
         type: string
-        description: "Image name without registry prefix (e.g. python-3.14)"
+        description: "Image repository base name (e.g. python, debian)"
+      image_tag:
+        required: true
+        type: string
+        description: "Image tag to publish (e.g. 3.14, 3.14-gdal, 13)"
 
 env:
-  REGISTRY_IMAGE: ghcr.io/corenting/base-container-images/${{ inputs.image_name }}
+  REGISTRY_IMAGE: ghcr.io/corenting/base-container-images/${{ inputs.image_base }}
 
 jobs:
   build:
@@ -58,8 +62,8 @@ jobs:
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=${{ github.event_name != 'pull_request' }},name-canonical=true,push=${{ github.event_name != 'pull_request' }}
-          cache-from: type=gha,scope=${{ inputs.image_name }}-${{ matrix.platform }}
-          cache-to: type=gha,mode=max,scope=${{ inputs.image_name }}-${{ matrix.platform }}
+          cache-from: type=gha,scope=${{ inputs.image_base }}-${{ inputs.image_tag }}-${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=${{ inputs.image_base }}-${{ inputs.image_tag }}-${{ matrix.platform }}
 
       - name: Export digest
         if: github.event_name != 'pull_request'
@@ -72,7 +76,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v7
         with:
-          name: digests-${{ inputs.image_name }}-${{ env.PLATFORM_PAIR }}
+          name: digests-${{ inputs.image_base }}-${{ inputs.image_tag }}-${{ env.PLATFORM_PAIR }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -87,7 +91,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           path: /tmp/digests
-          pattern: digests-${{ inputs.image_name }}-*
+          pattern: digests-${{ inputs.image_base }}-${{ inputs.image_tag }}-*
           merge-multiple: true
 
       - name: Set up Docker Buildx
@@ -104,17 +108,17 @@ jobs:
         working-directory: /tmp/digests
         run: |
           docker buildx imagetools create \
-            -t ${{ env.REGISTRY_IMAGE }}:latest \
+            -t ${{ env.REGISTRY_IMAGE }}:${{ inputs.image_tag }} \
             $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)
 
       - name: Inspect image
         run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:latest
+          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ inputs.image_tag }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: '${{ env.REGISTRY_IMAGE }}:latest'
+          image-ref: '${{ env.REGISTRY_IMAGE }}:${{ inputs.image_tag }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
