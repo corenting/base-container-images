@@ -1,4 +1,4 @@
-FROM ghcr.io/corenting/base-container-images/python:3.14@sha256:3ab89b76afbb27eff72f9121aba3d7f5d6aee0925a1f047e9d9696a09829e3ec
+FROM ghcr.io/corenting/base-container-images/python:3.14@sha256:af45db46a941b9da976b3b695bccd88cfba6db5e3cebcf6b0fab4104014d5a20
 
 USER root
 
