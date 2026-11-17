@@ -15,21 +15,38 @@
   "automerge": true,
   "automergeType": "branch",
 
-  // Only automerge digest and patch updates (not major/minor,
-  // e.g. we don't want to bump python 3.14 to 3.15 automatically)
+  // Packages ruiles
   "packageRules": [
+    // Python images are already per minor release,
+    // don't attempt to upgrade them
     {
-      "matchUpdateTypes": ["major", "minor"],
-      "automerge": false,
-      "reviewers": ["corenting"]
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "python", // For the images using base official python as source
+        "ghcr.io/corenting/base-container-images/python" // For the images inheriting from our base python image
+      ],
+      "matchUpdateTypes": ["major","minor"],
+      "enabled": false
+    },
+    // Debian images are per major release, so block major
+    // upgrade
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "debian" // We only use official debian as base image
+      ],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
     }
   ],
 
-  // For Dockerfile
+  // For updates of debian packages in Dockerfiles
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["**/Dockerfile"],
+      "managerFilePatterns": [
+        "**/Dockerfile"
+      ],
       "matchStrings": [
         "#\\s*renovate:\\s+depName=(?<depName>\\S+)\\nARG \\w+=(?<currentValue>\\S+)"
       ],
